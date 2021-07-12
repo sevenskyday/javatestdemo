@@ -1,7 +1,7 @@
 package demo.first;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*  
  * \t Æ¥Åä ÖÆ±í·û
@@ -32,17 +32,25 @@ import java.util.ResourceBundle;
 * 
 * */
 
-
 public class RegexDemo {
 
-	public static void main(String[] args)throws Exception{
+	public static void main(String[] args) throws Exception {
 		/*
 		 * String str="a"; String Regex="[abcABC]";
 		 * System.out.println(str.matches(Regex)); Locale loc=Locale.getDefault();
 		 * Locale loc1=Locale.UK; System.out.println(loc); System.out.println(loc1);
 		 */
-		ResourceBundle resource=ResourceBundle.getBundle("demo.resources.Demo");
-		String val=resource.getString("message");
-		System.out.println(val);
+//		ResourceBundle resource=ResourceBundle.getBundle("demo.resources.Demo");
+//		String val=resource.getString("message");
+//		System.out.println(val);
+
+		String str = "<font face=\"Arial,Serif\" size=\"+2\" color=\"red\">";
+		String regex = "\\w+=\"[a-zA-Z0-9,\\+]+\"";
+		Matcher matcher = Pattern.compile(regex).matcher(str);
+		while (matcher.find()) {
+			String temp = matcher.group(0);
+			String result[] = temp.split("=");
+			System.out.println(result[0] + "\t" + result[1].replace("\"", ""));
+		}
 	}
 }
