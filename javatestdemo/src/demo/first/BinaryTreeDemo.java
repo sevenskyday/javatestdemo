@@ -17,10 +17,11 @@ public class BinaryTreeDemo {
 		bt.add(new BinaryPerson("小T", 42));
 		bt.add(new BinaryPerson("小K", 49));
 		bt.add(new BinaryPerson("小W", 85));
-		//bt.remove(new BinaryPerson("小A", 40));
-		//bt.remove(new BinaryPerson("小L", 83));
-		bt.remove(new BinaryPerson("小H", 60));
-		bt.remove(new BinaryPerson("小R", 30));
+		 //bt.remove(new BinaryPerson("小A", 40));
+		// bt.remove(new BinaryPerson("小L", 83));
+		// bt.remove(new BinaryPerson("小H", 60));
+		 bt.remove(new BinaryPerson("小R", 30));
+		//bt.remove(new BinaryPerson("小C", 50));
 		Object[] data = bt.toArray();
 		System.out.println(Arrays.toString(data));
 	}
@@ -73,19 +74,21 @@ class BinaryTree<T extends Comparable<T>> {
 		 * 
 		 */
 		public void toArrayNode() {
-			System.out.println(BinaryTree.this.count);
-			System.out.println(BinaryTree.this.foot);
-			System.out.println(this.data.toString());
-			
+
+
 			if (this.left != null) {
 				this.left.toArrayNode();
 			}
+			System.out.println(BinaryTree.this.count);
+			System.out.println(BinaryTree.this.foot);
+			System.out.println(this.data.toString());
 			BinaryTree.this.returnData[BinaryTree.this.foot++] = this.data;
+			
 			if (this.right != null) {
 				this.right.toArrayNode();
 			}
 		}
-		
+
 		public void toArrayNodeleft() {
 			BinaryTree.this.returnData[BinaryTree.this.foot++] = this.data;
 			if (this.left != null) {
@@ -95,7 +98,7 @@ class BinaryTree<T extends Comparable<T>> {
 				this.right.toArrayNodeleft();
 			}
 		}
-		
+
 		public void toArrayNoderight() {
 			if (this.left != null) {
 				this.left.toArrayNoderight();
@@ -178,76 +181,121 @@ class BinaryTree<T extends Comparable<T>> {
 	}
 
 	public void remove(Comparable<T> data) {
+		if (this.root == null) {
+			return;
+		}
+
+		if (this.root.data.compareTo((T) data) == 0) {
+			
+			if (this.root.right == null&&this.root.left==null) 
+			{
+				//没有结点直接删除
+				this.root= null;
+				this.count=0;
+				return;
+			}
+			
+			Node moveNode = this.root;
+			//删除的是根结点
+			//有右子树 就取右子树的最小结点
+			if (this.root.right != null) {
+				 moveNode = this.root.right;
+				while (moveNode.left != null) {
+					moveNode = moveNode.left;
+				}
+				moveNode.parent.left = null;
+			}
+			//如果有左子树，就取左子树的最大结点
+			else if (this.root.left != null) {
+				 moveNode = this.root.left;
+				while (moveNode.right != null) {
+					moveNode = moveNode.right;
+				}
+				moveNode.parent.right = null;
+			}
+			// 删除结点的父级成为移动结点的父级
+			moveNode.parent = null;
+			if (this.root.left !=null) {
+				// 删除结点是父级的左子树。移动结点成为父级新的左子树
+				moveNode.left=this.root.left;
+			}
+			if (this.root.right !=null) { // 删除结点是父级的右子树。移动结点成为父级新的右子树
+				moveNode.right = this.root.right;
+			}
+			this.root=moveNode;
+			// 删除结点之后，总数递减
+			this.count--;
+			return;
+		}
+
 		if (this.contains(data)) {
 			Node removeNode = this.root.getRemoveNode(data);
 
 			if (removeNode != null) {
 				if (removeNode.left == null && removeNode.right == null) {
-					//父级的孩子关系断开
-					if(removeNode.parent.left==removeNode)
-					{
-						removeNode.parent.left=null;
+					// 父级的孩子关系断开
+					if (removeNode.parent.left == removeNode) {
+						removeNode.parent.left = null;
 					}
-					if(removeNode.parent.right==removeNode)
-					{
-						removeNode.parent.right=null;
+					if (removeNode.parent.right == removeNode) {
+						removeNode.parent.right = null;
 					}
-					//和父级的关系断开
+					// 和父级的关系断开
 					removeNode.parent = null;
-					
+
 				} else if (removeNode.left != null && removeNode.right == null) {
-					//只有左子树
-					if(removeNode.parent.left==removeNode)
-					{
-						//删除结点是父级的左子树。删除结点的左子树成为父级新的左子树
-						removeNode.parent.left=removeNode.left;
+					// 只有左子树
+					if (removeNode.parent.left == removeNode) {
+						// 删除结点是父级的左子树。删除结点的左子树成为父级新的左子树
+						removeNode.parent.left = removeNode.left;
 					}
-					if(removeNode.parent.right==removeNode)
-					{    //删除结点是父级的右子树。删除结点的左子树成为父级新的右子树
-						removeNode.parent.right=removeNode.left;
+					if (removeNode.parent.right == removeNode) { // 删除结点是父级的右子树。删除结点的左子树成为父级新的右子树
+						removeNode.parent.right = removeNode.left;
 					}
-					//左子树的父级变为删除节点的父级。
+					// 左子树的父级变为删除节点的父级。
 					removeNode.left.parent = removeNode.parent;
-					
+
 				} else if (removeNode.left == null && removeNode.right != null) {
-					//只有右子树
-					if(removeNode.parent.left==removeNode)
-					{
-						//删除结点是父级的左子树。删除结点的右子树成为父级新的左子树
-						removeNode.parent.left=removeNode.right;
+					// 只有右子树
+					if (removeNode.parent.left == removeNode) {
+						// 删除结点是父级的左子树。删除结点的右子树成为父级新的左子树
+						removeNode.parent.left = removeNode.right;
 					}
-					if(removeNode.parent.right==removeNode)
-					{    //删除结点是父级的右子树。删除结点的右子树成为父级新的右子树
-						removeNode.parent.right=removeNode.right;
+					if (removeNode.parent.right == removeNode) { // 删除结点是父级的右子树。删除结点的右子树成为父级新的右子树
+						removeNode.parent.right = removeNode.right;
 					}
-					//右子树的父级变为删除节点的父级。
+					// 右子树的父级变为删除节点的父级。
 					removeNode.right.parent = removeNode.parent;
 				} else {
+
+					if (this.root == removeNode) {
+
+						// 移除的是根结点
+					}
+
 					Node moveNode = removeNode.right;
-					// 寻找左子树的最大结点，或者右子树的最小结点。 
-					//现在设置为寻找右子树的最小左结点
+					// 寻找左子树的最大结点，或者右子树的最小结点。
+					// 现在设置为寻找右子树的最小左结点
 					while (moveNode.left != null) {
 						moveNode = moveNode.left;
 					}
-					//移动结点的父级需要删除该左结点
+					// 移动结点的父级需要删除该左结点
 					moveNode.parent.left = null;
-					//删除结点的父级成为移动结点的父级
+					// 删除结点的父级成为移动结点的父级
 					moveNode.parent = removeNode.parent;
-					//删除结点的右子树成为移动结点的右子树
+					// 删除结点的右子树成为移动结点的右子树
 					moveNode.right = removeNode.right;
-					//删除结点的左子树成为移动结点的左子树
+					// 删除结点的左子树成为移动结点的左子树
 					moveNode.left = removeNode.left;
-					if(removeNode.parent.left==removeNode)
-					{
-						//删除结点是父级的左子树。移动结点成为父级新的左子树
-						removeNode.parent.left=moveNode;
+					if (removeNode.parent.left == removeNode) {
+						// 删除结点是父级的左子树。移动结点成为父级新的左子树
+						removeNode.parent.left = moveNode;
 					}
-					if(removeNode.parent.right==removeNode)
-					{    //删除结点是父级的右子树。移动结点成为父级新的右子树
-						removeNode.parent.right=moveNode;
+					if (removeNode.parent.right == removeNode) { // 删除结点是父级的右子树。移动结点成为父级新的右子树
+						removeNode.parent.right = moveNode;
 					}
 				}
-				//删除结点之后，总数递减
+				// 删除结点之后，总数递减
 				this.count--;
 			}
 		}
